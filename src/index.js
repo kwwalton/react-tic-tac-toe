@@ -105,15 +105,29 @@ class Game extends React.Component {
     const squares = current.squares.slice();
     const position = this.state.historyPosition;
     // Do we already have a winner or is the square already filled?
-    if (calculateWinner(squares) || squares[i]) {
+    //console.log('Gam Over is : '+this.state.gameOver);
+    if (calculateWinner(squares, this) || squares[i]) {
       return;
     }
+    // console.log('game over? '+this.state.gameOver)
+
+
+    // Evaluate 
+    // if the square is already full
+    // if the game is over
+    // then update...
+
+
+    // if (this.state.gameOver || squares[i]) {
+    //   console.log('condition met should return');
+    //   return;
+    // }
     // Who's turn is next?
     squares[i] = this.state.xIsNext ? 'X' : 'O';
 
     // What are the classes on all the squares?
     const classValues = this.state.classList;
-    console.log(classValues);
+    //console.log(classValues);
 
     // Set state
     this.setState({
@@ -128,22 +142,14 @@ class Game extends React.Component {
     });
 
   const winner = calculateWinner(squares, this);
+  
 
   const gameOver = this.state.gameOver;
     let status;
     if (winner) {
       status = 'Winner: ' + winner + ', Game Over';
       console.log('Winner');
-      console.log(this.state);
-
-      // This works
-      //let cat = this.state.classList.slice();
-      //console.log('cat : '+cat);
-      //cat[0] = "square win";
-      // this.setState({
-      //   classList: cat,
-      //  });
-
+      
     }
     else if (gameOver && !winner) {
       status = 'Full Board, Game Over';
@@ -153,8 +159,15 @@ class Game extends React.Component {
 
     }
 
+// TODO: Set the state of the classlist for squares here
+const classListHistory = this.state.classList.slice(0, this.state.stepNumber + 1);
+const classList = this.state.classList;
+console.log('class list : '+classList);
     this.setState({
       status: status,
+      classListHistory: classListHistory.concat([{
+        classList: classList,
+      }]),    
     })
 
     // Is the board full?
@@ -163,6 +176,7 @@ class Game extends React.Component {
         gameOver: true,
       });
     } else {
+      console.log('I just unset game over ');
       this.setState({
         gameOver: false,
       });
@@ -188,7 +202,7 @@ class Game extends React.Component {
     // how many steps are there, is the step a winning move
     // TODO: track the winning move and status per history
     
-    //
+    // But check if 
     if (step < 9) {
       this.setState({
         gameOver: false,
@@ -200,7 +214,9 @@ class Game extends React.Component {
       stepNumber: step,
       xIsNext: (step % 2) === 0,
     });
-
+    let hereWeBe = this.state.history[step].squares.slice();
+    //console.log('here : '+this.state.history[this.state.history.length - 1].squares.slice());
+    calculateWinner(hereWeBe, this);
   }
 
   render() {
@@ -235,28 +251,7 @@ class Game extends React.Component {
 
 
 
-    // const gameOver = this.state.gameOver;
-    // let status;
-    // console.log(this.state.classList[0]);
-    // if (winner) {
-    //   status = 'Winner: ' + winner + ', Game Over';
-    //   console.log('Winner');
-    //   console.log(this.state);
-    //   let cat = this.state.classList.slice();
-    //   console.log('cat : '+cat);
-    //   cat[0] = "square win";
-    //   // this.setState({
-    //   //   classList: "",
-    //   // });
-    //   console.log(this.state.classList);
-    //   //
-    // }
-    // else if (gameOver && !winner) {
-    //   status = 'Full Board, Game Over';
-    // }
-    // else {
-    //   status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    // }
+    
 
     return (
       <div className="game">
@@ -279,35 +274,6 @@ class Game extends React.Component {
     );
   }
 }
-
-// function moveFromRender(){
-//   const history = this.state.history;
-//   const current = history[this.state.stepNumber];
-//   const winner = calculateWinner(current.squares);
-//   const gameOver = this.state.gameOver;
-//     //let status;
-//     console.log(this.state.classList[0]);
-//     if (winner) {
-//       //status = 'Winner: ' + winner + ', Game Over';
-//       console.log('Winner');
-//       console.log(this.state);
-//       let cat = this.state.classList.slice();
-//       console.log('cat : '+cat);
-//       cat[0] = "square win";
-//       // this.setState({
-//       //   classList: "",
-//       // });
-//       console.log(this.state.classList);
-//       //
-//     }
-//     else if (gameOver && !winner) {
-//       //status = 'Full Board, Game Over';
-//     }
-//     else {
-//       //status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-//     }
-
-// }
 
 function isBoardFull(squares) {
   let boardFull;
@@ -346,11 +312,13 @@ function calculateWinner(squares, thisref) {
       cat[lines[i][0]] = "square win";
       cat[lines[i][1]] = "square win";
       cat[lines[i][2]] = "square win";
-
+      //const gameOver = this.state.gameOver;
       thisref.setState({
         classList: cat,
+        gameOver: true,
       });
-      //console.log(this.state.classList);
+    
+      //console.log('win : '+this.state.classList);
       //
       return squares[a];
     }
